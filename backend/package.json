@@ -9,6 +9,9 @@
     "predev": "npm run build",
     "dev": "concurrently \"npx tsc -w\" \"nodemon build/server.js\""
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "author": "",
   "license": "ISC",
   "description": "",
@@ -23,6 +26,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.7",
-    "prisma": "^5.21.1"
+    "prisma": "^5.21.1",
+    "ts-node": "^10.9.2"
   }
 }
