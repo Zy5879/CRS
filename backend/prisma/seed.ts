@@ -36,7 +36,7 @@ async function main() {
       {
         make: "Toyota",
         model: "Corolla",
-        year: new Date("2021-01-01"),
+        year: 2021,
         transmission: Transmission.AUTOMATIC,
         pricePerDay: 100.0,
         state: "North Carolina",
@@ -46,7 +46,7 @@ async function main() {
       {
         make: "Honda",
         model: "Civic",
-        year: new Date("2022-01-01"),
+        year: 2022,
         transmission: Transmission.MANUAL,
         pricePerDay: 120.0,
         state: "New York",
