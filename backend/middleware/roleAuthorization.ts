@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Customer, Employee } from "@prisma/client";
 
-export const authorizeAdminStaffPermissions = (
+const authorizeAdminStaffPermissions = (
   req: Request<Customer, Employee>,
   res: Response,
   next: NextFunction
@@ -19,3 +19,5 @@ export const authorizeAdminStaffPermissions = (
 
   return res.status(403).json({ error: "Access Denied" });
 };
+
+module.exports = authorizeAdminStaffPermissions;
