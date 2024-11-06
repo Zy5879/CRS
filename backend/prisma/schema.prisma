@@ -19,6 +19,7 @@ model Customer {
   driversLicense String       @unique
   createdAt      DateTime     @default(now())
   reservations   Reservation?
+  role Role      @default(CUSTOMER)
 }
 
 model Vehicles {
@@ -83,6 +84,7 @@ enum Maintenance {
 enum Role {
   ADMIN
   STAFF
+  CUSTOMER
 }
 
 enum InvoiceStatus {
