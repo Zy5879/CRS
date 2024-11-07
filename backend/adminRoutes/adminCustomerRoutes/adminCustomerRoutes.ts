@@ -74,3 +74,31 @@ adminViewCustomers.put(
     }
   }
 );
+
+adminViewCustomers.delete(
+  "/customers/:id",
+  authorizeAdminStaffPermissions,
+  async (req, res) => {
+    try {
+      const cust_id = req.params.id;
+
+      const customer = await prisma.customer.findUnique({
+        where: {
+          id: cust_id,
+        },
+      });
+
+      if (!customer) {
+        res.status(404).json({ message: `Customer ${cust_id} not found` });
+        return;
+      } else {
+        res
+          .status(200)
+          .json({ message: `Customer ${cust_id}, deleted successfully` });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
