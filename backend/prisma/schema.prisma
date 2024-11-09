@@ -60,6 +60,8 @@ model Reservation {
   Invoice           Invoice?
   customer          Customer          @relation(fields: [cust_id], references: [id])
   vehicle           Vehicles          @relation(fields: [vehicle_id], references: [id])
+
+  @@unique([cust_id, vehicle_id])
 }
 
 model Invoice {

@@ -5,7 +5,7 @@ const authorizeAdminStaffPermissions = require("../../middleware/roleAuthorizati
 export const vehicleRouter = Router();
 const prisma = new PrismaClient();
 
-vehicleRouter.get("/", async (req, res) => {
+vehicleRouter.get("/", async (_req, res) => {
   try {
     const vehicles = await prisma.vehicles.findMany();
     if (!vehicles) {
@@ -42,62 +42,6 @@ vehicleRouter.get("/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-vehicleRouter.put("/:id", authorizeAdminStaffPermissions, async (req, res) => {
-  const vehicleId = req.params.id;
-  const updateData = req.body;
-
-  try {
-    const updateVehicle = await prisma.vehicles.update({
-      where: {
-        id: vehicleId,
-      },
-      data: updateData,
-    });
-
-    if (!updateVehicle) {
-      res.status(200).json({ message: `Vehicle ${vehicleId} not found` });
-      return;
-    } else {
-      res.status(200).json({
-        message: `Vehicle ${vehicleId} successfully updated`,
-        updateVehicle,
-      });
-      return;
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-vehicleRouter.delete(
-  "/:id",
-  authorizeAdminStaffPermissions,
-  async (req, res) => {
-    const vehicleId = req.params.id;
-
-    try {
-      const vehicle = await prisma.vehicles.findUnique({
-        where: {
-          id: vehicleId,
-        },
-      });
-
-      if (!vehicle) {
-        res.status(404).json({ message: `Vehicle ${vehicleId}, not found` });
-        return;
-      } else {
-        res
-          .status(200)
-          .json({ message: `Vehicle, ${vehicleId}, successfully deleted` });
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  }
-);
 
 vehicleRouter.get("/available", async (req, res) => {
   const { pickUpDate, dropOffDate, make, model, year, state, city } = req.query;
@@ -142,21 +86,3 @@ vehicleRouter.get("/available", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-// vehicleRouter.get(
-//   "/",
-//   expressAsyncHandler(async (_req, res) => {
-//     try {
-//       const vehicles = await prisma.vehicles.findMany();
-//       res.status(200).json(vehicles);
-//     } catch (error) {
-//       console.log(error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   })
-// );
-
-// vehicleRouter.get(
-//   "/check-availability",
-//   expressAsyncHandler(async (_req, res) => {})
-// );
