@@ -8,12 +8,17 @@ const cors_1 = __importDefault(require("cors"));
 const customerAuthRoutes_1 = require("./customerAuthRoutes/customerAuthRoutes");
 const adminCustomerRoutes_1 = require("./adminRoutes/adminCustomerRoutes/adminCustomerRoutes");
 const adminAuthRoutes_1 = require("./adminRoutes/adminAuthRoutes/adminAuthRoutes");
+const adminInvoiceRoutes_1 = require("./adminRoutes/adminInvoiceRoutes/adminInvoiceRoutes");
+const adminReservationRoutes_1 = require("./adminRoutes/adminReservationRoutes/adminReservationRoutes");
+const adminVehicleRoutes_1 = require("./adminRoutes/adminVehicleRoutes/adminVehicleRoutes");
+const vehicleRoutes_1 = require("./vehicleRoutes/vehicleRoutes");
 const port = 8000;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use("/customerAuth", customerAuthRoutes_1.customerSignInRouter, customerAuthRoutes_1.customerSignUpRouter);
-app.use("/admin", adminCustomerRoutes_1.adminViewCustomers, adminAuthRoutes_1.adminAuthRoutes);
+app.use("/admin", adminCustomerRoutes_1.adminViewCustomers, adminAuthRoutes_1.adminAuthRoutes, adminInvoiceRoutes_1.adminInvoiceRoutes, adminReservationRoutes_1.adminReservationRoutes, adminVehicleRoutes_1.adminVehicleRoute);
+app.use("/vehicles", vehicleRoutes_1.vehicleRouter);
 app.get("/", (_req, res) => {
     res.send("Welcome");
 });

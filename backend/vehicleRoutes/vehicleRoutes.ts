@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-const authorizeAdminStaffPermissions = require("../../middleware/roleAuthorization");
 
 export const vehicleRouter = Router();
 const prisma = new PrismaClient();
