@@ -7,7 +7,7 @@ export const adminReservationRoutes = Router();
 
 adminReservationRoutes.put(
   "/reservation/:id/pickup",
-  adminReservationRoutes,
+  authorizeAdminStaffPermissions,
   async (req, res) => {
     const reservationId = req.params.id;
 
@@ -53,12 +53,11 @@ adminReservationRoutes.put(
           status: InvoiceStatus.PAID,
         },
       });
-      res
-        .status(201)
-        .json({
-          message: `Reservation Status Updated. Invoice Generated: ${invoice.id}`,
-          invoice,
-        });
+      res.status(201).json({
+        message: `Reservation Status Updated. Invoice Generated: ${invoice.id}`,
+        invoice,
+        updatedReservation,
+      });
       return;
     } catch (error) {
       console.log(error);
@@ -216,6 +215,114 @@ adminReservationRoutes.put(
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+
+adminReservationRoutes.put(
+  "/reservation/:id/return",
+  authorizeAdminStaffPermissions,
+
+  async (req, res) => {
+    const reservationId = req.params.id;
+
+    try {
+      const reservation = await prisma.reservation.findUnique({
+        where: { id: reservationId },
+        include: { vehicle: true },
+      });
+
+      if (!reservation) {
+        res
+          .status(404)
+          .json({ error: `Reservation ${reservationId} not found` });
+        return;
+      }
+
+      if (reservation.reservationStatus !== ReservationStatus.ACTIVE) {
+        res
+          .status(400)
+          .json({ erorr: `Reservation ${reservationId} already returned` });
+        return;
+      }
+
+      const updateReservation = await prisma.reservation.update({
+        where: { id: reservationId },
+        data: {
+          reservationStatus: ReservationStatus.COMPLETED,
+        },
+      });
+
+      res.status(200).json({
+        message: `Reservation ${reservationId} is completed: Vehicle Returned`,
+        updateReservation,
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+
+adminReservationRoutes.put(
+  "/reservation/:id/pickup",
+  authorizeAdminStaffPermissions,
+  async (req, res) => {
+    const reservationId = req.params.id;
+
+    try {
+      const reservation = await prisma.reservation.findUnique({
+        where: { id: reservationId },
+        include: { vehicle: true },
+      });
+
+      if (!reservation) {
+        res
+          .status(404)
+          .json({ error: `No Reservation Found for ${reservationId}` });
+        return;
+      }
+
+      if (reservation.reservationStatus !== ReservationStatus.PENDING) {
+        res
+          .status(400)
+          .json({ error: `Reservation is already picked up: ${reservation}` });
+        return;
+      }
+
+      const startDate = reservation.pickupDateTime;
+      const endDate = reservation.dropOffDateTime;
+      const durationInDays = Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const totalPrice =
+        durationInDays * parseFloat(reservation.vehicle.pricePerDay.toString());
+
+      const updatedReservation = await prisma.reservation.update({
+        where: { id: reservationId },
+        data: {
+          reservationStatus: ReservationStatus.ACTIVE,
+        },
+      });
+
+      const invoice = await prisma.invoice.create({
+        data: {
+          reservation_id: reservationId,
+          amount: totalPrice,
+          status: InvoiceStatus.PAID,
+        },
+      });
+      res.status(201).json({
+        message: `Reservation Status Updated. Invoice Generated: ${invoice.id}`,
+        invoice,
+        updatedReservation,
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
     }
   }
 );

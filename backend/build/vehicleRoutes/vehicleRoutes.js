@@ -31,6 +31,53 @@ exports.vehicleRouter.get("/", (_req, res) => __awaiter(void 0, void 0, void 0, 
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
+exports.vehicleRouter.get("/available", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pickUpDate, dropOffDate, make, model, year, state, city } = req.query;
+    const start = new Date(pickUpDate);
+    const end = new Date(dropOffDate);
+    const filters = {
+        reservation: {
+            none: {
+                AND: [
+                    {
+                        pickupDateTime: { gte: start },
+                    },
+                    {
+                        dropOffDateTime: { lte: end },
+                    },
+                ],
+            },
+        },
+    };
+    if (make)
+        filters.make = make;
+    if (model)
+        filters.model = model;
+    if (year)
+        filters.year = parseInt(year);
+    if (city)
+        filters.city = city;
+    if (state)
+        filters.state = state;
+    console.log(JSON.stringify(filters, null, 2));
+    try {
+        const availableVehicles = yield prisma.vehicles.findMany({
+            where: filters,
+        });
+        if (availableVehicles.length === 0) {
+            res.status(200).json({ message: "No available Vehicles " });
+            return;
+        }
+        else {
+            res.status(200).json(availableVehicles);
+            return;
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}));
 exports.vehicleRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const vehicleId = req.params.id;
     try {
@@ -45,50 +92,6 @@ exports.vehicleRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0
         }
         else {
             res.status(200).json(vehicle);
-            return;
-        }
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-}));
-exports.vehicleRouter.get("/available", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { pickUpDate, dropOffDate, make, model, year, state, city } = req.query;
-    const start = new Date(pickUpDate);
-    const end = new Date(dropOffDate);
-    const filters = {
-        Reservation: {
-            none: {
-                AND: [
-                    {
-                        pickUpDateTime: { lt: end },
-                    },
-                    {
-                        dropffDateTime: { gt: start },
-                    },
-                ],
-            },
-        },
-    };
-    if (make)
-        filters.make = make;
-    if (model)
-        filters.model = model;
-    if (year)
-        filters.year = parseInt(year);
-    if (city)
-        filters.city = city;
-    try {
-        const availableVehicles = yield prisma.vehicles.findMany({
-            where: filters,
-        });
-        if (!availableVehicles) {
-            res.status(200).json({ message: "No available Vehicles " });
-            return;
-        }
-        else {
-            res.status(200).json(availableVehicles);
             return;
         }
     }

@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 export const adminInvoiceRoutes = Router();
 
 adminInvoiceRoutes.get(
-  "/invoice",
+  "/",
   authorizeAdminStaffPermissions,
-  async (req, res) => {
+  async (_req, res) => {
     try {
       const invoices = await prisma.invoice.findMany();
       if (!invoices) {
