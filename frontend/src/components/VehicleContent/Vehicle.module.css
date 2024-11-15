@@ -1,0 +1,18 @@
+.vt {
+  text-align: center;
+  font-style: bold;
+}
+
+.vc {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+}
+
+img {
+  width: 100%;
+}
+
+p {
+  text-align: center;
+}
