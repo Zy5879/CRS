@@ -6,25 +6,21 @@ const prisma = new PrismaClient();
 
 export const adminViewCustomers = Router();
 
-adminViewCustomers.get(
-  "/customers",
-  authorizeAdminStaffPermissions,
-  async (_req, res) => {
-    try {
-      const customers = await prisma.customer.findMany();
-      if (!customers) {
-        res.status(200).json({ message: "No Customers Find" });
-        return;
-      } else {
-        res.status(200).json(customers);
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: "Internal Server Error" });
+adminViewCustomers.get("/customers", async (_req, res) => {
+  try {
+    const customers = await prisma.customer.findMany();
+    if (!customers) {
+      res.status(200).json({ message: "No Customers Find" });
+      return;
+    } else {
+      res.status(200).json(customers);
+      return;
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-);
+});
 
 adminViewCustomers.get(
   "/customers/:id",

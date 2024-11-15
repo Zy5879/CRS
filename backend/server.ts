@@ -16,7 +16,7 @@ const port = 8000;
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use("/customerAuth", customerSignInRouter, customerSignUpRouter);
+app.use("/customer", customerSignInRouter, customerSignUpRouter);
 app.use(
   "/admin",
   adminViewCustomers,

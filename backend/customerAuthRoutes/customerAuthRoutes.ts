@@ -45,7 +45,7 @@ customerSignUpRouter.post(
   })
 );
 
-customerSignInRouter.get(
+customerSignInRouter.post(
   "/login",
   expressAsyncHandler(async (req, res) => {
     const { email, password } = req.body;

@@ -15,7 +15,7 @@ const client_1 = require("@prisma/client");
 const authorizeAdminStaffPermissions = require("../../middleware/roleAuthorization");
 const prisma = new client_1.PrismaClient();
 exports.adminViewCustomers = (0, express_1.Router)();
-exports.adminViewCustomers.get("/customers", authorizeAdminStaffPermissions, (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminViewCustomers.get("/customers", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const customers = yield prisma.customer.findMany();
         if (!customers) {

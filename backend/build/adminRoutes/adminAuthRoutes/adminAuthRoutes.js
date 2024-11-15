@@ -14,7 +14,7 @@ const express_1 = require("express");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 exports.adminAuthRoutes = (0, express_1.Router)();
-exports.adminAuthRoutes.get("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminAuthRoutes.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
         const employee = yield prisma.employee.findFirst({
@@ -27,7 +27,7 @@ exports.adminAuthRoutes.get("/login", (req, res) => __awaiter(void 0, void 0, vo
             return;
         }
         else {
-            res.status(200).json({ message: "Login Successful", employee });
+            res.status(200).json({ success: true, employee: employee });
         }
     }
     catch (error) {

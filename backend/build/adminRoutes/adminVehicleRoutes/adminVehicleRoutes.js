@@ -15,7 +15,24 @@ const client_1 = require("@prisma/client");
 const authorizeAdminStaffPermissions = require("../../middleware/roleAuthorization");
 const prisma = new client_1.PrismaClient();
 exports.adminVehicleRoute = (0, express_1.Router)();
-exports.adminVehicleRoute.put("/vehicle/:id", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminVehicleRoute.get("/vehicle", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const vehicles = yield prisma.vehicles.findMany();
+        if (!vehicles) {
+            res.status(200).json({ message: "No Vehicles Available" });
+            return;
+        }
+        else {
+            res.status(200).json(vehicles);
+            return;
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}));
+exports.adminVehicleRoute.put("/vehicle/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const vehicleId = req.params.id;
     const updateData = req.body;
     try {
@@ -42,7 +59,7 @@ exports.adminVehicleRoute.put("/vehicle/:id", authorizeAdminStaffPermissions, (r
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
-exports.adminVehicleRoute.delete("/vehicle/:id", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminVehicleRoute.delete("/vehicle/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const vehicleId = req.params.id;
     try {
         const vehicle = yield prisma.vehicles.findUnique({

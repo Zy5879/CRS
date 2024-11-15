@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const authorizeAdminStaffPermissions = (req, res, next) => {
-    const user = req.body;
+    const user = req.headers.authorization
+        ? JSON.parse(req.headers.authorization)
+        : null;
     if (!user || !user.role) {
         res.status(401).json({ error: "Access Denied" });
         return;

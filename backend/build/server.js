@@ -16,7 +16,7 @@ const port = 8000;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.use("/customerAuth", customerAuthRoutes_1.customerSignInRouter, customerAuthRoutes_1.customerSignUpRouter);
+app.use("/customer", customerAuthRoutes_1.customerSignInRouter, customerAuthRoutes_1.customerSignUpRouter);
 app.use("/admin", adminCustomerRoutes_1.adminViewCustomers, adminAuthRoutes_1.adminAuthRoutes, adminInvoiceRoutes_1.adminInvoiceRoutes, adminReservationRoutes_1.adminReservationRoutes, adminVehicleRoutes_1.adminVehicleRoute);
 app.use("/vehicles", vehicleRoutes_1.vehicleRouter);
 app.get("/", (_req, res) => {

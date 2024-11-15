@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export const adminAuthRoutes = Router();
 
-adminAuthRoutes.get("/login", async (req, res) => {
+adminAuthRoutes.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -19,7 +19,7 @@ adminAuthRoutes.get("/login", async (req, res) => {
         .json({ message: "Login Failed: Invaild Email or Password" });
       return;
     } else {
-      res.status(200).json({ message: "Login Successful", employee });
+      res.status(200).json({ success: true, employee: employee });
     }
   } catch (error) {
     console.log(error);
