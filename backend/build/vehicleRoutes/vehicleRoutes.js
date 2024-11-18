@@ -64,6 +64,7 @@ exports.vehicleRouter.get("/available", (req, res) => __awaiter(void 0, void 0, 
         const availableVehicles = yield prisma.vehicles.findMany({
             where: filters,
         });
+        console.log(JSON.stringify(availableVehicles, null, 2));
         if (availableVehicles.length === 0) {
             res.status(200).json({ message: "No available Vehicles " });
             return;

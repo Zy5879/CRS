@@ -32,7 +32,7 @@ exports.adminViewCustomers.get("/customers", (_req, res) => __awaiter(void 0, vo
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
-exports.adminViewCustomers.get("/customers/:id", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminViewCustomers.get("/customers/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const cust_id = req.params.id;
         const customer = yield prisma.customer.findUnique({
@@ -53,7 +53,7 @@ exports.adminViewCustomers.get("/customers/:id", authorizeAdminStaffPermissions,
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
-exports.adminViewCustomers.put("/customers/:id", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminViewCustomers.put("/customers/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const cust_id = req.params.id;
         const updateData = req.body;

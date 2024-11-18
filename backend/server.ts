@@ -10,6 +10,7 @@ import { adminInvoiceRoutes } from "./adminRoutes/adminInvoiceRoutes/adminInvoic
 import { adminReservationRoutes } from "./adminRoutes/adminReservationRoutes/adminReservationRoutes";
 import { adminVehicleRoute } from "./adminRoutes/adminVehicleRoutes/adminVehicleRoutes";
 import { vehicleRouter } from "./vehicleRoutes/vehicleRoutes";
+import { adminRentalReport } from "./adminRoutes/adminRentalReport/adminRentalReport";
 
 const port = 8000;
 
@@ -23,7 +24,8 @@ app.use(
   adminAuthRoutes,
   adminInvoiceRoutes,
   adminReservationRoutes,
-  adminVehicleRoute
+  adminVehicleRoute,
+  adminRentalReport
 );
 app.use("/vehicles", vehicleRouter);
 

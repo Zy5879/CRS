@@ -15,7 +15,7 @@ const client_1 = require("@prisma/client");
 const authorizeAdminStaffPermissions = require("../../middleware/roleAuthorization");
 const prisma = new client_1.PrismaClient();
 exports.adminReservationRoutes = (0, express_1.Router)();
-exports.adminReservationRoutes.put("/reservation/:id/pickup", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminReservationRoutes.post("/reservation/:id/pickup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const reservationId = req.params.id;
     try {
         const reservation = yield prisma.reservation.findUnique({
@@ -39,14 +39,14 @@ exports.adminReservationRoutes.put("/reservation/:id/pickup", authorizeAdminStaf
         const durationInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
         const totalPrice = durationInDays * parseFloat(reservation.vehicle.pricePerDay.toString());
         const updatedReservation = yield prisma.reservation.update({
-            where: { id: reservationId },
+            where: { id: reservation.id },
             data: {
                 reservationStatus: client_1.ReservationStatus.ACTIVE,
             },
         });
         const invoice = yield prisma.invoice.create({
             data: {
-                reservation_id: reservationId,
+                reservation_id: reservation.id,
                 amount: totalPrice,
                 status: client_1.InvoiceStatus.PAID,
             },
@@ -64,7 +64,7 @@ exports.adminReservationRoutes.put("/reservation/:id/pickup", authorizeAdminStaf
         return;
     }
 }));
-exports.adminReservationRoutes.get("/reservation", authorizeAdminStaffPermissions, (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminReservationRoutes.get("/reservation", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservations = yield prisma.reservation.findMany();
         if (!reservations) {
@@ -82,7 +82,7 @@ exports.adminReservationRoutes.get("/reservation", authorizeAdminStaffPermission
         return;
     }
 }));
-exports.adminReservationRoutes.post("/reservation", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminReservationRoutes.post("/reservation", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { cust_id, vehicle_id, pickupLocation, dropOffLocation, pickUpDateTime, dropffDateTime, } = req.body;
     try {
         const vehicle = yield prisma.vehicles.findUnique({
@@ -94,21 +94,29 @@ exports.adminReservationRoutes.post("/reservation", authorizeAdminStaffPermissio
             res.status(404).json({ message: `Vehicle ${vehicle_id} not found` });
             return;
         }
+        const customer = yield prisma.customer.findUnique({
+            where: {
+                id: cust_id,
+            },
+        });
+        console.log(JSON.stringify(customer, null, 2));
+        if (!customer) {
+            res.status(404).json({ message: `Customer ${cust_id} not found` });
+            return;
+        }
         const startDate = new Date(pickUpDateTime);
         const endDate = new Date(dropffDateTime);
         const durationInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
         const totalPrice = durationInDays * parseInt(vehicle.pricePerDay.toString());
         const reservation = yield prisma.reservation.create({
             data: {
-                cust_id,
-                vehicle_id,
+                cust_id: customer.id,
+                vehicle_id: vehicle.id,
                 pickupLocation,
                 dropOffLocation,
                 pickupDateTime: startDate,
                 dropOffDateTime: endDate,
                 reservationStatus: "PENDING",
-                vehicle: { connect: { id: vehicle_id } },
-                customer: { connect: { id: cust_id } },
             },
         });
         res
@@ -121,7 +129,7 @@ exports.adminReservationRoutes.post("/reservation", authorizeAdminStaffPermissio
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
-exports.adminReservationRoutes.put("/reservation/:id", exports.adminReservationRoutes, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminReservationRoutes.put("/reservation/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const reservationId = req.params.id;
     const { pickupDateTime, dropOffDateTime } = req.body;
     try {
@@ -180,7 +188,7 @@ exports.adminReservationRoutes.put("/reservation/:id", exports.adminReservationR
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
-exports.adminReservationRoutes.put("/reservation/:id/return", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminReservationRoutes.post("/reservation/:id/return", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const reservationId = req.params.id;
     try {
         const reservation = yield prisma.reservation.findUnique({
@@ -188,9 +196,7 @@ exports.adminReservationRoutes.put("/reservation/:id/return", authorizeAdminStaf
             include: { vehicle: true },
         });
         if (!reservation) {
-            res
-                .status(404)
-                .json({ error: `Reservation ${reservationId} not found` });
+            res.status(404).json({ error: `Reservation ${reservationId} not found` });
             return;
         }
         if (reservation.reservationStatus !== client_1.ReservationStatus.ACTIVE) {
@@ -200,7 +206,7 @@ exports.adminReservationRoutes.put("/reservation/:id/return", authorizeAdminStaf
             return;
         }
         const updateReservation = yield prisma.reservation.update({
-            where: { id: reservationId },
+            where: { id: reservation.id },
             data: {
                 reservationStatus: client_1.ReservationStatus.COMPLETED,
             },
@@ -216,7 +222,7 @@ exports.adminReservationRoutes.put("/reservation/:id/return", authorizeAdminStaf
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
-exports.adminReservationRoutes.put("/reservation/:id/pickup", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminReservationRoutes.put("/reservation/:id/pickup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const reservationId = req.params.id;
     try {
         const reservation = yield prisma.reservation.findUnique({
@@ -240,14 +246,14 @@ exports.adminReservationRoutes.put("/reservation/:id/pickup", authorizeAdminStaf
         const durationInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
         const totalPrice = durationInDays * parseFloat(reservation.vehicle.pricePerDay.toString());
         const updatedReservation = yield prisma.reservation.update({
-            where: { id: reservationId },
+            where: { id: reservation.id },
             data: {
                 reservationStatus: client_1.ReservationStatus.ACTIVE,
             },
         });
         const invoice = yield prisma.invoice.create({
             data: {
-                reservation_id: reservationId,
+                reservation_id: reservation.id,
                 amount: totalPrice,
                 status: client_1.InvoiceStatus.PAID,
             },

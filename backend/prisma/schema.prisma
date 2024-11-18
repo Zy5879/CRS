@@ -50,7 +50,7 @@ model Employee {
 
 model Reservation {
   id                String            @id @default(uuid())
-  cust_id           String
+  cust_id           String    
   vehicle_id        String
   pickupLocation    String
   dropOffLocation   String

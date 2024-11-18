@@ -12,10 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminRentalReport = void 0;
 const express_1 = require("express");
 const client_1 = require("@prisma/client");
-const authorizeAdminStaffPermissions = require("../../middleware/roleAuthorization");
 const prisma = new client_1.PrismaClient();
 exports.adminRentalReport = (0, express_1.Router)();
-exports.adminRentalReport.get("/in-house", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminRentalReport.get("/rented", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { startDate, endDate } = req.query;
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -24,8 +23,8 @@ exports.adminRentalReport.get("/in-house", authorizeAdminStaffPermissions, (req,
             where: {
                 reservation: {
                     some: {
-                        pickupDateTime: { lte: start },
-                        dropOffDateTime: { gte: end },
+                        pickupDateTime: { gte: start },
+                        dropOffDateTime: { lte: end },
                         reservationStatus: "ACTIVE",
                     },
                 },
@@ -40,14 +39,16 @@ exports.adminRentalReport.get("/in-house", authorizeAdminStaffPermissions, (req,
             });
             return;
         }
-        res.status(200).json({ rentedVehicles });
+        res
+            .status(200)
+            .json({ message: "Rental Report Generated", report: rentedVehicles });
     }
     catch (error) {
         console.log(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
-exports.adminRentalReport.get("/in-house", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminRentalReport.get("/in-house", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { startDate, endDate } = req.query;
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -56,15 +57,12 @@ exports.adminRentalReport.get("/in-house", authorizeAdminStaffPermissions, (req,
             where: {
                 reservation: {
                     none: {
-                        AND: [
-                            { pickupDateTime: { lte: end } },
-                            { dropOffDateTime: { gte: start } },
+                        OR: [
+                            { dropOffDateTime: { lte: start } },
+                            { pickupDateTime: { gte: end } },
                         ],
                     },
                 },
-            },
-            include: {
-                reservation: true,
             },
         });
         if (inhouseVehicles.length === 0) {
@@ -73,7 +71,10 @@ exports.adminRentalReport.get("/in-house", authorizeAdminStaffPermissions, (req,
             });
             return;
         }
-        res.status(200).json(inhouseVehicles);
+        res.status(200).json({
+            message: "Generated",
+            report: inhouseVehicles,
+        });
         return;
     }
     catch (error) {
@@ -82,7 +83,7 @@ exports.adminRentalReport.get("/in-house", authorizeAdminStaffPermissions, (req,
         return;
     }
 }));
-exports.adminRentalReport.get("/revenue", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminRentalReport.get("/revenue", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { startDate, endDate } = req.query;
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -101,7 +102,8 @@ exports.adminRentalReport.get("/revenue", authorizeAdminStaffPermissions, (req, 
         });
         const revenueAmount = totalRevenue._sum.amount || 0;
         res.status(200).json({
-            totalRevenue: revenueAmount,
+            message: `Total Revenue For start: ${startDate} and end: ${endDate} is $ ${revenueAmount}`,
+            report: revenueAmount,
         });
     }
     catch (error) {

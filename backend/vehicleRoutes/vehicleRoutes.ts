@@ -54,6 +54,8 @@ vehicleRouter.get("/available", async (req, res) => {
       where: filters,
     });
 
+    console.log(JSON.stringify(availableVehicles, null, 2));
+
     if (availableVehicles.length === 0) {
       res.status(200).json({ message: "No available Vehicles " });
       return;
