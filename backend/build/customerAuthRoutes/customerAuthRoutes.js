@@ -51,7 +51,7 @@ exports.customerSignUpRouter.post("/signup", (0, express_async_handler_1.default
         res.status(500).json({ error: "Internal server error" });
     }
 })));
-exports.customerSignInRouter.post("/login", (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.customerSignInRouter.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
         const currentCustomer = yield prisma.customer.findFirst({
@@ -78,7 +78,7 @@ exports.customerSignInRouter.post("/login", (0, express_async_handler_1.default)
         res.status(500).json({ message: "Internal Service Error" });
         return;
     }
-})));
+}));
 exports.customerForgetPassword.post("/forgot-password", (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, driversLicense, password } = req.body;
     try {

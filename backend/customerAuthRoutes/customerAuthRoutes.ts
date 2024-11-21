@@ -45,37 +45,34 @@ customerSignUpRouter.post(
   })
 );
 
-customerSignInRouter.post(
-  "/login",
-  expressAsyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+customerSignInRouter.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-    try {
-      const currentCustomer = await prisma.customer.findFirst({
-        where: { email: email, password: password },
+  try {
+    const currentCustomer = await prisma.customer.findFirst({
+      where: { email: email, password: password },
+    });
+
+    if (currentCustomer) {
+      res.status(200).json({
+        success: true,
+        message: "Login Successfull",
+        currentCustomer,
       });
-
-      if (currentCustomer) {
-        res.status(200).json({
-          success: true,
-          message: "Login Successfull",
-          currentCustomer,
-        });
-        return;
-      } else {
-        res.status(400).json({
-          success: false,
-          message: "Login Failed: Invalid email or password",
-        });
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "Internal Service Error" });
+      return;
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Login Failed: Invalid email or password",
+      });
       return;
     }
-  })
-);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Service Error" });
+    return;
+  }
+});
 
 customerForgetPassword.post(
   "/forgot-password",
