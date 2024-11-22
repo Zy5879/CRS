@@ -70,7 +70,7 @@ exports.adminViewCustomers.put("/customers/:id", (req, res) => __awaiter(void 0,
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
-exports.adminViewCustomers.delete("/customers/:id", authorizeAdminStaffPermissions, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.adminViewCustomers.delete("/customers/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const cust_id = req.params.id;
         const customer = yield prisma.customer.findUnique({
